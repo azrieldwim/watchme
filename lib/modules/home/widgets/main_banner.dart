@@ -45,7 +45,14 @@ class MainBanner extends GetView<HomeController> {
   Widget _buildBannerContent(BuildContext context, MovieModel movie) {
     final WatchlistController watchlistController =
         Get.find<WatchlistController>();
-    final String backdropUrl = '${ApiConfig.imageBaseUrl}${movie.backdropPath}';
+    final String backdropPath = movie.backdropPath;
+    final String imageSource = getImageUrl(
+      backdropPath,
+      baseUrl: ApiConfig.imageBaseUrl,
+    );
+    final bool isNetworkImage = imageSource.startsWith(
+      'assets/images/placeholder.png',
+    );
     final String releaseYear = movie.releaseDate.split('-').first;
     final String genreNames = (movie.genres ?? []).take(4).join(' ');
     final String formattedRuntime = formatRuntime(movie.runtime);
@@ -63,14 +70,25 @@ class MainBanner extends GetView<HomeController> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                backdropUrl,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-                color: Colors.black.withOpacity(0.3),
-                colorBlendMode: BlendMode.darken,
-              ),
+              child:
+                  isNetworkImage
+                      ? Image.asset(
+                        imageSource,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                        color: Colors.black.withOpacity(0.3),
+                        colorBlendMode: BlendMode.darken,
+                      )
+                      : FadeInImage.assetNetwork(
+                        placeholder: localPlaceholderPath,
+                        image: imageSource,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                        color: Colors.black.withOpacity(0.3),
+                        colorBlendMode: BlendMode.darken,
+                      ),
             ),
             Align(
               alignment: Alignment.bottomCenter,

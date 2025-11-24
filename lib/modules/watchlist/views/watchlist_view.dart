@@ -28,7 +28,7 @@ class WatchlistView extends GetView<WatchlistController> {
             child: TextField(
               onChanged: (query) => controller.searchLocalQuery.value = query,
               decoration: InputDecoration(
-                hintText: 'Cari film di Watchlist...',
+                hintText: 'Search Movie On Watchlist...',
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(40.0),
@@ -67,7 +67,9 @@ class WatchlistView extends GetView<WatchlistController> {
                     onTap: () {
                       Get.toNamed(Routes.detail, arguments: movie.id);
                     },
-                    onWatchlistTap: () {controller.toggleWatchlist(movie);},
+                    onWatchlistTap: () {
+                      controller.toggleWatchlist(movie);
+                    },
                   );
                 },
               );

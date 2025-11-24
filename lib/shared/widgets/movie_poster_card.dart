@@ -11,7 +11,13 @@ class MoviePosterCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String posterUrl = '${ApiConfig.imageBaseUrl}${movie.posterPath}';
+    final String posterPath = movie.posterPath;
+    final String imageSource = getImageUrl(
+      posterPath,
+      baseUrl: ApiConfig.imageBaseUrl,
+    );
+    final bool isNetworkImage =
+        !imageSource.startsWith('assets/images/placeholder.png');
     final String rating = movie.rating.toStringAsFixed(1);
     final String releaseYear = movie.releaseDate.split('-').first;
     final String formattedRuntime = formatRuntime(movie.runtime);
@@ -35,21 +41,24 @@ class MoviePosterCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8.0),
                   child: AspectRatio(
                     aspectRatio: 2 / 3,
-                    child: FadeInImage.assetNetwork(
-                      placeholder: 'assets/images/placeholder.png',
-                      image: posterUrl,
-                      fit: BoxFit.cover,
-                      imageErrorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey[800],
-                          alignment: Alignment.center,
-                          child: const Icon(
-                            Icons.broken_image,
-                            color: Colors.white70,
-                          ),
-                        );
-                      },
-                    ),
+                    child:
+                        isNetworkImage
+                            ? FadeInImage.assetNetwork(
+                              placeholder: localPlaceholderPath,
+                              image: imageSource,
+                              fit: BoxFit.cover,
+                              imageErrorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: Colors.grey[800],
+                                  alignment: Alignment.center,
+                                  child: const Icon(
+                                    Icons.broken_image,
+                                    color: Colors.white70,
+                                  ),
+                                );
+                              },
+                            )
+                            : Image.asset(imageSource, fit: BoxFit.cover),
                   ),
                 ),
                 Positioned(

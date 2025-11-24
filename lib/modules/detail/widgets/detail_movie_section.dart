@@ -14,7 +14,13 @@ class DetailMovieSection extends GetView<DetailController> {
 
   @override
   Widget build(BuildContext context) {
-    final String backdropUrl = '${ApiConfig.imageBaseUrl}${movie.backdropPath}';
+    final String backdropPath = movie.backdropPath;
+    final String imageSource = getImageUrl(
+      backdropPath,
+      baseUrl: ApiConfig.imageBaseUrl,
+    );
+    final bool isNetworkImage =
+        !imageSource.startsWith('assets/images/placeholder.png');
     final String formattedRuntime = formatRuntime(movie.runtime);
     final String releaseYear = movie.releaseDate.split('-').first;
     final String certification = movie.certification ?? 'N/A';
@@ -32,13 +38,26 @@ class DetailMovieSection extends GetView<DetailController> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: FadeInImage.assetNetwork(
-                  placeholder: 'assets/images/placeholder.png',
-                  image: backdropUrl,
-                  fit: BoxFit.cover,
-                  color: Colors.black.withOpacity(0.3),
-                  colorBlendMode: BlendMode.darken,
-                ),
+                child:
+                    isNetworkImage
+                        ? FadeInImage.assetNetwork(
+                          placeholder: localPlaceholderPath,
+                          image: imageSource,
+                          fit: BoxFit.cover,
+                          color: Colors.black.withOpacity(0.3),
+                          colorBlendMode: BlendMode.darken,
+                          imageErrorBuilder:
+                              (context, error, stackTrace) => Image.asset(
+                                localPlaceholderPath,
+                                fit: BoxFit.cover,
+                              ),
+                        )
+                        : Image.asset(
+                          imageSource,
+                          fit: BoxFit.cover,
+                          color: Colors.black.withOpacity(0.3),
+                          colorBlendMode: BlendMode.darken,
+                        ),
               ),
               Container(
                 decoration: BoxDecoration(

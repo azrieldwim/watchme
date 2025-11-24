@@ -23,7 +23,13 @@ class MovieResultCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final WatchlistController watchlistController =
         Get.find<WatchlistController>();
-    final String posterUrl = '${ApiConfig.imageBaseUrl}${movie.posterPath}';
+    final String posterPath = movie.posterPath;
+    final String imageSource = getImageUrl(
+      posterPath,
+      baseUrl: ApiConfig.imageBaseUrl,
+    );
+    final bool isNetworkImage =
+        !imageSource.startsWith('assets/images/placeholder.png');
     final String releaseYear = movie.releaseDate.split('-').first;
     final String formattedRuntime = formatRuntime(movie.runtime);
     final String certification = movie.certification ?? 'N/A';
@@ -46,17 +52,25 @@ class MovieResultCard extends StatelessWidget {
                 topLeft: Radius.circular(8.0),
                 bottomLeft: Radius.circular(8.0),
               ),
-              child: FadeInImage.assetNetwork(
-                placeholder: 'assets/images/placeholder.png',
-                image: posterUrl,
-                fit: BoxFit.fill,
+              child: SizedBox(
                 height: 154,
-                imageErrorBuilder:
-                    (context, error, stackTrace) => Container(
-                      height: 154,
-                      color: Colors.grey[800],
-                      child: const Icon(Icons.movie, color: Colors.white54),
-                    ),
+                width: 113,
+                child:
+                    isNetworkImage
+                        ? FadeInImage.assetNetwork(
+                          placeholder: localPlaceholderPath,
+                          image: imageSource,
+                          fit: BoxFit.fill,
+                          imageErrorBuilder:
+                              (context, error, stackTrace) => Container(
+                                color: Colors.grey[800],
+                                child: const Icon(
+                                  Icons.movie,
+                                  color: Colors.white54,
+                                ),
+                              ),
+                        )
+                        : Image.asset(imageSource, fit: BoxFit.cover),
               ),
             ),
             const SizedBox(width: 12),
