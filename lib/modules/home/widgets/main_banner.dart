@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:watchme/config/routes/app_routes.dart';
 import 'package:watchme/config/theme/app_colors.dart';
 import 'package:watchme/data/services/api_config.dart';
+import 'package:watchme/modules/watchlist/controllers/watchlist_controller.dart';
 import 'package:watchme/shared/widgets/movie_info_chip.dart';
 import 'package:watchme/utils/app_utils.dart';
 import '../../../data/models/movie_model.dart';
@@ -42,6 +43,8 @@ class MainBanner extends GetView<HomeController> {
   }
 
   Widget _buildBannerContent(BuildContext context, MovieModel movie) {
+    final WatchlistController watchlistController =
+        Get.find<WatchlistController>();
     final String backdropUrl = '${ApiConfig.imageBaseUrl}${movie.backdropPath}';
     final String releaseYear = movie.releaseDate.split('-').first;
     final String genreNames = (movie.genres ?? []).take(4).join(' ');
@@ -123,73 +126,76 @@ class MainBanner extends GetView<HomeController> {
                   horizontal: 16.0,
                   vertical: 12,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Text(
+                          movie.title,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.headlineSmall?.copyWith(fontSize: 18),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          genreNames.isEmpty ? 'Loading Genres...' : genreNames,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: Colors.white70, fontSize: 12),
+                        ),
+                        SizedBox(height: 8),
+                        Row(
                           children: [
-                            Text(
-                              movie.title,
-                              style: Theme.of(
-                                context,
-                              ).textTheme.headlineSmall?.copyWith(fontSize: 18),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              genreNames.isEmpty
-                                  ? 'Loading Genres...'
-                                  : genreNames,
-                              style: Theme.of(
-                                context,
-                              ).textTheme.bodyMedium?.copyWith(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Row(
-                              children: [
-                                MovieInfoChip(label: certification),
-                                const SizedBox(width: 8),
-                                MovieInfoChip(label: releaseYear),
-                                const SizedBox(width: 8),
-                                MovieInfoChip(label: formattedRuntime),
-                              ],
-                            ),
+                            MovieInfoChip(label: certification),
+                            const SizedBox(width: 8),
+                            MovieInfoChip(label: releaseYear),
+                            const SizedBox(width: 8),
+                            MovieInfoChip(label: formattedRuntime),
                           ],
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 8,
-                                ),
-                                minimumSize: Size.zero,
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Obx(() {
+                          final bool isCurrentWatched = watchlistController
+                              .watchlistMovieIds
+                              .contains(movie.id);
+                          return ElevatedButton(
+                            onPressed: () {
+                              watchlistController.toggleWatchlist(movie);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  isCurrentWatched
+                                      ? AppColors.red
+                                      : AppColors.primary,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 8,
                               ),
-                              child: Text(
-                                'Add To Watchlist',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.titleSmall?.copyWith(fontSize: 12),
+                              minimumSize: Size.zero,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
                               ),
                             ),
-                            const SizedBox(height: 8),
-                            _buildDotsIndicator(context, movies.length),
-                            const SizedBox(height: 6),
-                          ],
-                        ),
+                            child: Text(
+                              isCurrentWatched
+                                  ? 'In Watchlist'
+                                  : 'Add To Watchlist',
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: AppColors.white),
+                            ),
+                          );
+                        }),
+                        const SizedBox(height: 8),
+                        _buildDotsIndicator(context, movies.length),
+                        const SizedBox(height: 6),
                       ],
                     ),
                   ],

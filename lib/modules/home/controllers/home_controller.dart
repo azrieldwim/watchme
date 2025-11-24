@@ -1,10 +1,13 @@
 import 'package:get/get.dart';
 import 'package:watchme/config/theme/app_colors.dart';
+import 'package:watchme/modules/watchlist/controllers/watchlist_controller.dart';
 import '../../../data/models/movie_model.dart';
 import '../../../data/services/movie_service.dart';
 
 class HomeController extends GetxController {
   final MovieService _movieService = Get.find<MovieService>();
+  final WatchlistController watchlistController =
+      Get.find<WatchlistController>();
 
   final isLoading = true.obs;
   final trendingMovies = <MovieModel>[].obs;

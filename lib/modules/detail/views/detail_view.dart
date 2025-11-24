@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:watchme/config/theme/app_colors.dart';
 import 'package:watchme/modules/detail/widgets/detail_credits_section.dart';
 import 'package:watchme/modules/detail/widgets/detail_movie_section.dart';
 import 'package:watchme/modules/detail/widgets/detail_rating_section.dart';
@@ -26,21 +27,37 @@ class DetailView extends GetView<DetailController> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   DetailMovieSection(movie: movie),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                  Obx(() {
+                    final bool isCurrentWatched = controller
+                        .watchlistController
+                        .watchlistMovieIds
+                        .contains(movie.id);
+
+                    return SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          controller.watchlistController.toggleWatchlist(movie);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          backgroundColor:
+                              isCurrentWatched
+                                  ? AppColors.red
+                                  : AppColors.primary,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: Text(
+                          isCurrentWatched
+                              ? 'In Watchlist'
+                              : 'Add To Watchlist',
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleSmall?.copyWith(fontSize: 16),
+                        ),
                       ),
-                      child: Text(
-                        'Add To Watchlist',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.titleSmall?.copyWith(fontSize: 16),
-                      ),
-                    ),
-                  ),
+                    );
+                  }),
                   const SizedBox(height: 20),
                   DetailRatingSection(movie: movie),
                   const SizedBox(height: 20),

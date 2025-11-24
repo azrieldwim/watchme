@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:watchme/modules/watchlist/controllers/watchlist_controller.dart';
 import 'package:watchme/shared/widgets/movie_info_chip.dart';
 import '../../../data/models/movie_model.dart';
 import '../../../data/services/api_config.dart';
@@ -19,6 +21,8 @@ class MovieResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final WatchlistController watchlistController =
+        Get.find<WatchlistController>();
     final String posterUrl = '${ApiConfig.imageBaseUrl}${movie.posterPath}';
     final String releaseYear = movie.releaseDate.split('-').first;
     final String formattedRuntime = formatRuntime(movie.runtime);
@@ -107,23 +111,36 @@ class MovieResultCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        ElevatedButton(
-                          onPressed: onWatchlistTap,
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 8,
-                            ),
-                            minimumSize: Size.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                          ),
-                          child: Text(
-                            'Add to Watchlist',
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(color: AppColors.white),
-                          ),
+                        Flexible(
+                          child: Obx(() {
+                            final bool isCurrentWatched = watchlistController
+                                .watchlistMovieIds
+                                .contains(movie.id);
+                            return ElevatedButton(
+                              onPressed: onWatchlistTap,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    isCurrentWatched
+                                        ? AppColors.red
+                                        : AppColors.primary,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
+                                minimumSize: Size.zero,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                              ),
+                              child: Text(
+                                isCurrentWatched
+                                    ? 'In Watchlist'
+                                    : 'Add To Watchlist',
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(color: AppColors.white),
+                              ),
+                            );
+                          }),
                         ),
                       ],
                     ),

@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:watchme/modules/watchlist/controllers/watchlist_controller.dart';
 import '../../../data/models/movie_model.dart';
 import '../../../data/models/cast_model.dart';
 import '../../../data/models/video_model.dart';
@@ -7,6 +8,8 @@ import '../../../data/services/movie_service.dart';
 
 class DetailController extends GetxController {
   final MovieService _movieService = Get.find<MovieService>();
+  final WatchlistController watchlistController =
+      Get.find<WatchlistController>();
   final movieId = Get.arguments as int;
 
   final isLoading = true.obs;

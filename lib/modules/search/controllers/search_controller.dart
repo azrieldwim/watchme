@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:watchme/modules/watchlist/controllers/watchlist_controller.dart';
 import '../../../data/models/movie_model.dart';
 import '../../../data/services/movie_service.dart';
 
 class SearchMovieController extends GetxController {
+  final WatchlistController watchlistController =
+      Get.find<WatchlistController>();
   final MovieService _movieService = Get.find<MovieService>();
 
   final searchQuery = ''.obs;

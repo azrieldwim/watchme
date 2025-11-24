@@ -67,7 +67,9 @@ class SearchMovieView extends GetView<SearchMovieController> {
                         controller.addMovieToPreviousSearch(movie);
                         Get.toNamed(Routes.detail, arguments: movie.id);
                       },
-                      onWatchlistTap: () {},
+                      onWatchlistTap: () {
+                        controller.watchlistController.toggleWatchlist(movie);
+                      },
                     );
                   },
                 );
@@ -115,12 +117,11 @@ class SearchMovieView extends GetView<SearchMovieController> {
               return MovieResultCard(
                 movie: movie,
                 onTap: () {
-                  controller.addMovieToPreviousSearch(
-                    movie,
-                  ); 
+                  controller.addMovieToPreviousSearch(movie);
                   Get.toNamed(Routes.detail, arguments: movie.id);
                 },
                 onWatchlistTap: () {
+                  controller.watchlistController.toggleWatchlist(movie);
                 },
               );
             },
