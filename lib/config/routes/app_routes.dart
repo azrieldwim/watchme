@@ -1,5 +1,6 @@
 class Routes {
-  static const home = '/';
+  static const main = '/';
+  static const home = '/home';
   static const detail = '/detail';
   static const search = '/search';
   static const watchlist = '/watchlist';
